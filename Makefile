@@ -22,7 +22,7 @@ ERROR_COLOR	= \033[31;01m
 WARN_COLOR	= \033[33;01m
 
 # Which makefile am I in?
-WHERE-AM-I = $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
+WHERE-AM-I = "$(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))"
 THIS_MAKEFILE := $(call WHERE-AM-I)
 
 # Echo some nice helptext based on the target comment
@@ -84,7 +84,7 @@ clean-all: clean
 .PHONY: less
 less: prepare-build
 	@$(call HELPTEXT,$@)
-	
+
 	$(foreach file, $(LESS), $(NPMBIN)/lessc $(LESS_OPTIONS) $(file) build/css/$(basename $(file)).css; )
 	$(foreach file, $(LESS), $(NPMBIN)/lessc --clean-css $(LESS_OPTIONS) $(file) build/css/$(basename $(file)).min.css; )
 
@@ -133,11 +133,11 @@ update:
 # target: npm-update         - Update npm development packages.
 # target: npm-version        - Display version for each package.
 .PHONY: npm-installl npm-update npm-version
-npm-install: 
+npm-install:
 	@$(call HELPTEXT,$@)
 	npm install
 
-npm-update: 
+npm-update:
 	@$(call HELPTEXT,$@)
 	npm update
 
@@ -145,3 +145,31 @@ npm-version:
 	@$(call HELPTEXT,$@)
 	$(NPMBIN)/lessc --version
 	$(NPMBIN)/csslint --version
+
+
+
+# target: upgrade-normalize       - Upgrade LESS module - Normalize.
+.PHONY: upgrade-normalize
+upgrade-normalize:
+	@$(call HELPTEXT,$@)
+
+	# Normalizer
+	wget --quiet https://necolas.github.io/normalize.css/latest/normalize.css -O $(LESS_MODULES)/normalize.less
+
+
+
+# target: upgrade-responsive-menu - Upgrade LESS module - Responsive menu
+.PHONY: upgrade-responsive-menu
+upgrade-responsive-menu:
+	@$(call HELPTEXT,$@)
+
+	# Responsive-menu
+	wget --quiet https://raw.githubusercontent.com/mosbth/responsive-menu/master/src/less/responsive-menu.less -O $(LESS_MODULES)/responsive-menu.less
+	wget --quiet https://raw.githubusercontent.com/mosbth/responsive-menu/master/src/js/responsive-menu.js -O js/responsive-menu.js
+
+
+
+# target: upgrade                 - Upgrade external LESS modules.
+.PHONY: upgrade
+upgrade: upgrade-normalize upgrade-responsive-menu
+	@$(call HELPTEXT,$@)
